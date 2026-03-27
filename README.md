@@ -6,6 +6,17 @@ A systen in which the user takes a number of photos (by his decision) with an OV
 Before diving deep it's important to mote that there are two way for doing the note detection algorithm: one (the naive way) is detecting the ellipse with fitellipse function (as part of a bigger algorithm which would be discussed  later), or the second option, using a red line that is being placed by the user while taking the photo. the fisrt way is more simple while the second is more accurate. Because the image comes from an OV7670 camera (low resulotion camera) we've decided to go with the second option. there is still an alterantive CV code that can be found in this project using the first method.
 
 
+# A View on the System
+<img width="1265" height="1077" alt="image" src="https://github.com/user-attachments/assets/c57bc8fc-3555-4153-bf42-426d6eafd3f4" />
+
+
+# Block Diagram of the System
+<img width="869" height="532" alt="image" src="https://github.com/user-attachments/assets/565cf6fa-fb7a-4b0c-a5d6-421c62b4ce88" />
+
+
+# FPGA Block Diagram
+<img width="794" height="695" alt="image" src="https://github.com/user-attachments/assets/e719f061-eaba-4f0f-a874-ed34f53bea8b" />
+
 
 
 # VGA
