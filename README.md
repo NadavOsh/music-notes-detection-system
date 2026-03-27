@@ -133,3 +133,101 @@ The communication between the MicroBlaze and the FPGA fabric is handled via the 
 | `0x4003_0000` | **Reset Trigger**| In | Waits for an external signal (button) to restart. |
 
 
+
+
+
+
+
+##  MicroBlaze Control & Data Extraction
+
+The system integrates a MicroBlaze soft processor to enable software-driven access to image data stored in BRAM. This allows flexible inspection, debugging, and processing of selected image regions.
+
+---
+
+### 🔗 Hardware–Software Interface
+
+Communication between the MicroBlaze and FPGA logic is implemented using **memory-mapped I/O registers**:
+
+| Address        | Function                     |
+|----------------|------------------------------|
+| `0x40000000`   | Read trigger                 |
+| `0x40000008`   | Pixel address input          |
+| `0x40010000`   | Pixel data output            |
+| `0x40020000`   | Control / status signals     |
+| `0x40020008`   | Ready flag                  |
+| `0x40030000`   | Restart trigger              |
+
+The processor writes to these registers to control BRAM access and reads back pixel values.
+
+---
+
+###  Operating Modes (MUX-Based Control)
+
+A multiplexer in the FPGA determines the source of BRAM read operations:
+
+- **Normal Mode (`mux = 0`)**  
+  VGA controller continuously reads from BRAM for real-time display.
+
+- **Processor Mode (`mux = 1`)**  
+  MicroBlaze takes control of BRAM access:
+  - Provides pixel addresses  
+  - Triggers read operations  
+  - Receives pixel data  
+
+This enables software-driven image scanning without interfering with the hardware pipeline.
+
+---
+
+###  Pixel Scanning Algorithm
+
+The MicroBlaze scans a Region of Interest (ROI) within the image:
+
+- X range: `170 → 340`  
+- Y range: `140 → 340`  
+
+Each pixel coordinate is converted into a linear BRAM address:
+
+address = y * 640 + x;
+
+For every pixel:
+
+1. Write address to FPGA
+2. Trigger read operation
+3. Read pixel data from BRAM
+4. Output result via UART (xil_printf)
+
+---
+
+### Read Synchronization
+
+A rising-edge trigger mechanism is used to initiate BRAM reads:
+
+* Writing 1 to the trigger register generates a rising edge
+* FPGA detects the edge and performs a memory read
+* Writing 0 resets the trigger for the next operation
+
+Delays (usleep) are used to ensure proper synchronization between software and hardware timing.
+
+---
+
+### Data Output
+Pixel values are transmitted over UART:
+
+Format:
+
+* Hexadecimal pixel value
+* Corresponding memory address
+
+---
+
+### Purpose & Use Cases
+* Selective pixel inspection from software
+* Debugging image data in real-time
+* Validating FPGA image processing stages
+* Enabling hybrid HW/SW image processing workflows
+
+---
+### Summary
+The MicroBlaze subsystem provides a flexible bridge between software and hardware, allowing direct access to frame buffer data through a controlled, memory-mapped interface. Combined with the MUX-based architecture, this enables dynamic switching between real-time display and software-driven analysis.
+
+
