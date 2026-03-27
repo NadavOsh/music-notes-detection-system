@@ -14,11 +14,13 @@ Before diving deep it's important to mote that there are two way for doing the n
 <img width="869" height="532" alt="image" src="https://github.com/user-attachments/assets/565cf6fa-fb7a-4b0c-a5d6-421c62b4ce88" />
 
 
+# FPGA
+
 # FPGA Block Diagram
 <img width="794" height="695" alt="image" src="https://github.com/user-attachments/assets/e719f061-eaba-4f0f-a874-ed34f53bea8b" />
 
 ---
-# FPGA
+
 
 ---
 ##  Top-Level System Integration (`top.v`)
@@ -185,7 +187,8 @@ An Integrated Logic Analyzer (ILA) is used to monitor:
 The top module brings together camera input, memory buffering, real-time display, and processor control into a cohesive system. It demonstrates a complete embedded vision pipeline with both hardware acceleration and software interaction.
 
 ---
-
+# Camera---------------------------------------------------------------------------------------------------------
+---
 
 ##  Dual-Port BRAM (Frame Buffer)
 
