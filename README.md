@@ -82,11 +82,31 @@ A debouncer is used to clean the external reset signal.
 * Configures and controls the OV7670 camera via I2C
 * Captures pixel data using pclk, href, and vsync signals
 * Outputs:
-- Pixel data (12-bit RGB)
-- Pixel address
-- Write enable signal
+   * Pixel data (12-bit RGB)
+   * Pixel address
+   * Write enable signal
 
 This data is streamed into BRAM.
+
+## Frame Buffer (BRAM)
+
+A dual-port BRAM is used as a frame buffer:
+
+* Write Port (Camera domain):
+  * Stores incoming pixel data
+* Read Port (VGA / MicroBlaze domain):
+  * Supplies pixel data for display or processing
+
+
+### BRAM Read Arbitration (MUX)
+
+A multiplexer controls access to the BRAM read interface:
+
+```verilog
+i_rd      = mux ? read_pixel_rising : 1'b1;
+i_rd_addr = mux ? read_pixel_address : o_bram_pix_addr;
+```
+
 
 ---
 
