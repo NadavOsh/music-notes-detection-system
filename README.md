@@ -82,9 +82,9 @@ A debouncer is used to clean the external reset signal.
 * Configures and controls the OV7670 camera via I2C
 * Captures pixel data using pclk, href, and vsync signals
 * Outputs:
-** Pixel data (12-bit RGB)
-** Pixel address
-** Write enable signal
+- Pixel data (12-bit RGB)
+- Pixel address
+- Write enable signal
 
 This data is streamed into BRAM.
 
