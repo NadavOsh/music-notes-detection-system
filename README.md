@@ -92,11 +92,11 @@ This VGA subsystem enables real-time image display directly from FPGA memory, fo
 
 
 # Microblaze
-## 🏗️ Hardware-Software Co-Design: MicroBlaze & FPGA Integration
+##  Hardware-Software Co-Design: MicroBlaze & FPGA Integration
 
 This project implements a **Real-Time Image Processing Pipeline** where a Xilinx MicroBlaze soft-core processor interacts with an OV7670 camera feed stored in Block RAM (BRAM). The system allows for high-level C-based analysis of raw pixel data without interrupting the live VGA video output.
 
-### 🔄 The "Memory Stealing" Mechanism
+###  The "Memory Stealing" Mechanism
 The core of the interface is a **Multiplexer (MUX)** logic that arbitrates access to the Frame Buffer (BRAM). The hardware operates in two primary modes:
 
 1.  **VGA Mode (Default):** The VGA controller has full control of the BRAM address bus, scanning from index `0` to `307,199` to maintain a stable 640x480 display.
@@ -104,7 +104,7 @@ The core of the interface is a **Multiplexer (MUX)** logic that arbitrates acces
 
 
 
-### 💻 Firmware Logic (`main.c`)
+###  Firmware Logic
 The firmware performs a structured scan of a specific **Region of Interest (ROI)** within the camera frame rather than processing the entire image, which optimizes performance for the soft-core CPU.
 
 #### 1. Handshaking & Synchronization
@@ -132,7 +132,4 @@ The communication between the MicroBlaze and the FPGA fabric is handled via the 
 | `0x4002_0008` | **Status Bit** | In | Checks if the hardware is ready for processing. |
 | `0x4003_0000` | **Reset Trigger**| In | Waits for an external signal (button) to restart. |
 
-### 🚀 Key Performance Features
-* **Non-Destructive Monitoring:** High-speed MUXing allows the processor to analyze data with negligible impact on the live VGA feed.
-* **Edge Detection Logic:** Uses a hardware-level rising edge detector to ensure that BRAM "Read Enable" pulses precisely once per software request, preventing data synchronization issues.
-* **Flexible Sub-Sampling:** Coordinates can be adjusted in the C code to track specific objects (e.g., a Red Line) within the frame.
+
