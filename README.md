@@ -46,8 +46,6 @@ This module integrates the following subsystems:
 Camera → cam_top → Image Processing → BRAM → VGA → Display
                                       ↘
                                        MicroBlaze (optional access)
-
-
 ```
 
 * The camera continuously writes pixel data into BRAM
@@ -58,7 +56,38 @@ Camera → cam_top → Image Processing → BRAM → VGA → Display
 
  The design operates across multiple clock domains:
 
- 
+ | Clock          | Purpose                     |
+ |----------------|-----------------------------|
+ | i_top_clk      | System / control logic      |
+ | i_top_pclk     | Camera pixel clock          |
+ | w_clk25m       | VGA display clock (25MHz)   |
+
+
+A dedicated clock_gen module generates:
+
+* VGA clock (25 MHz)
+* Camera XCLK
+
+### Reset Synchronization
+
+Each clock domain includes a double flip-flop synchronizer to ensure safe reset handling and avoid metastability:
+
+* top_clk domain
+* pclk (camera) domain
+* clk25m (VGA) domain
+
+A debouncer is used to clean the external reset signal.
+
+### Camera Interface (cam_top)
+* Configures and controls the OV7670 camera via I2C
+* Captures pixel data using pclk, href, and vsync signals
+* Outputs:
+** Pixel data (12-bit RGB)
+** Pixel address
+** Write enable signal
+
+This data is streamed into BRAM.
+
 ---
 
 
