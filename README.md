@@ -107,6 +107,82 @@ i_rd      = mux ? read_pixel_rising : 1'b1;
 i_rd_addr = mux ? read_pixel_address : o_bram_pix_addr;
 ```
 
+* MUX = 0 (Display Mode)
+VGA reads BRAM sequentially for real-time display
+* MUX = 1 (Processor Mode)
+MicroBlaze controls:
+  * Read address
+  * Read trigger
+
+This enables software-driven pixel inspection.
+
+### MicroBlaze Integration
+
+The design_1_wrapper module connects the MicroBlaze processor to the FPGA:
+
+* Communicates via memory-mapped GPIO
+* Sends:
+   * Pixel read requests
+   * Addresses
+* Receives:
+  * Pixel data from BRAM
+
+A rising-edge detector converts software writes into hardware read triggers.
+
+
+### Image Processing / Overlay Logic
+
+Before writing to BRAM, pixel data is conditionally modified:
+
+* A Region of Interest (ROI) is defined:
+  * X: 170–340
+  * Y: 140–340
+* Inside ROI:
+  * Original image is preserved
+* Outside ROI:
+  * Background is colored (blue)
+* A dynamic horizontal red line is generated:
+  * Controlled by a signal generator
+  * Triggered via button input
+
+This demonstrates real-time image manipulation directly in hardware.
+
+### VGA Output (vga_top)
+* Reads pixel data from BRAM
+* Generates VGA timing signals
+* Outputs RGB values to display
+
+Operates at 640×480 resolution using a 25 MHz pixel clock.
+
+### User Interface
+* 7-Segment Display: Displays values based on switches
+* Buttons:
+  * Reset (debounced)
+  * Red line control
+* Switches:
+  * Mode selection (MUX)
+  * Debug / control signals
+ 
+ ### Debugging (ILA)
+
+An Integrated Logic Analyzer (ILA) is used to monitor:
+
+* VGA signals
+* Pixel data
+* BRAM addresses
+* MicroBlaze interactions
+
+### Key Features
+* Multi-clock domain design
+* Real-time video pipeline
+* Dual-port memory architecture
+* Hardware–software co-design (FPGA + MicroBlaze)
+* Dynamic image overlay (ROI + moving line)
+* Flexible BRAM access via MUX arbitration
+
+### Summary
+
+The top module brings together camera input, memory buffering, real-time display, and processor control into a cohesive system. It demonstrates a complete embedded vision pipeline with both hardware acceleration and software interaction.
 
 ---
 
