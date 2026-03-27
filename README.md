@@ -45,7 +45,7 @@ This allows safe data transfer between different clock domains.
 
 ---
 
-### 📐 Memory Configuration
+###  Memory Configuration
 
 - Resolution: `640 × 480`  
 - Total depth: `307,200` pixels  
