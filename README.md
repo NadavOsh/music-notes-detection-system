@@ -17,8 +17,44 @@ Before diving deep it's important to mote that there are two way for doing the n
 # FPGA Block Diagram
 <img width="794" height="695" alt="image" src="https://github.com/user-attachments/assets/e719f061-eaba-4f0f-a874-ed34f53bea8b" />
 
+---
 
+# BRAM
 
+##  Dual-Port BRAM (Frame Buffer)
+
+The system uses a custom dual-port Block RAM (BRAM) module as a frame buffer to store image data captured from the camera and provide it for display or processor access.
+
+---
+
+###  Overview
+
+The `mem_bram` module implements a **dual-port memory** with separate clocks for read and write operations:
+
+- **Write Port (Camera Domain)**  
+  - Clock: `i_wclk` (camera pixel clock)  
+  - Used by: Camera interface (`cam_top`)  
+  - Function: Writes incoming pixel data into memory  
+
+- **Read Port (Display / Processor Domain)**  
+  - Clock: `i_rclk` (25 MHz VGA clock)  
+  - Used by: VGA controller or MicroBlaze (via MUX)  
+  - Function: Reads pixel data for display or software processing  
+
+This allows safe data transfer between different clock domains.
+
+---
+
+### 📐 Memory Configuration
+
+- Resolution: `640 × 480`  
+- Total depth: `307,200` pixels  
+- Pixel format: `12-bit RGB (4:4:4)`  
+- Addressing: Linear (row-major order)
+
+```c
+address = y * 640 + x;
+---
 # VGA
 
 ##  VGA Display Subsystem
