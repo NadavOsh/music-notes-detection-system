@@ -52,8 +52,41 @@ This allows safe data transfer between different clock domains.
 - Pixel format: `12-bit RGB (4:4:4)`  
 - Addressing: Linear (row-major order)
 
-```c
+
 address = y * 640 + x;
+
+### Dual-Port Operation
+
+The BRAM supports simultaneous read and write operations:
+
+* Camera continuously writes pixels during image capture
+* VGA or MicroBlaze reads pixels independently
+
+This enables real-time image display while maintaining access for processing or debugging.
+
+### Timing Behavior
+* Read and write operations are synchronous to their respective clocks
+* There is a one-clock-cycle latency for both read and write operations
+
+### Memory Access Arbitration
+
+A MUX-based control mechanism determines the source of the read address:
+
+* VGA Mode: Sequential reads for continuous display
+* Processor Mode: MicroBlaze provides custom read addresses
+
+This allows switching between real-time visualization and software-driven inspection.
+
+### Key Design Features
+* True dual-port memory with independent clocks
+* Safe crossing between camera and display clock domains
+* Efficient 2D-to-1D address mapping
+* Supports both streaming (VGA) and random access (MicroBlaze)
+
+## Summary
+
+The BRAM serves as the central data buffer in the system, enabling seamless integration between the camera input, FPGA processing, VGA output, and MicroBlaze-based control.
+
 ---
 # VGA
 
