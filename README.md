@@ -86,3 +86,53 @@ Behavior:
 ###  Summary
 
 This VGA subsystem enables real-time image display directly from FPGA memory, forming a key part of the system pipeline from image capture to visualization.
+
+
+
+
+
+# Microblaze
+## 🏗️ Hardware-Software Co-Design: MicroBlaze & FPGA Integration
+
+This project implements a **Real-Time Image Processing Pipeline** where a Xilinx MicroBlaze soft-core processor interacts with an OV7670 camera feed stored in Block RAM (BRAM). The system allows for high-level C-based analysis of raw pixel data without interrupting the live VGA video output.
+
+### 🔄 The "Memory Stealing" Mechanism
+The core of the interface is a **Multiplexer (MUX)** logic that arbitrates access to the Frame Buffer (BRAM). The hardware operates in two primary modes:
+
+1.  **VGA Mode (Default):** The VGA controller has full control of the BRAM address bus, scanning from index `0` to `307,199` to maintain a stable 640x480 display.
+2.  **Processor Mode (Active):** When the C code initiates a read, the MUX "steals" the BRAM address bus for a single clock cycle. This allows the MicroBlaze to sample a specific pixel's color data at a targeted coordinate.
+
+
+
+### 💻 Firmware Logic (`main.c`)
+The firmware performs a structured scan of a specific **Region of Interest (ROI)** within the camera frame rather than processing the entire image, which optimizes performance for the soft-core CPU.
+
+#### 1. Handshaking & Synchronization
+The software ensures the hardware is ready before beginning a scan:
+* **Trigger:** Writes `0x1` to the Control Register to signal the start of a processing task.
+* **Polling:** Monitors a status bit to wait for the FPGA hardware to acknowledge readiness.
+* **Visual Feedback:** Updates onboard LEDs to indicate the current state (Processing vs. Finished).
+
+#### 2. ROI Pixel Extraction
+The code targets a specific window ($170 \times 200$) defined by:
+* **X-Coordinates:** 170 to 340
+* **Y-Coordinates:** 140 to 340
+
+For every pixel in this box, the software calculates the linear BRAM address ($Address = Y \times 640 + X$), toggles the MUX to grab the data, and prints the 12-bit RGB444 value to the UART console.
+
+### 🛰️ Memory Map (AXI4-Lite)
+The communication between the MicroBlaze and the FPGA fabric is handled via the following memory-mapped registers:
+
+| Base Address | Function | Direction | Description |
+| :--- | :--- | :--- | :--- |
+| `0x4000_0000` | **MUX Trigger** | Out | `1` = Processor takes control; `0` = VGA control. |
+| `0x4000_0008` | **Address Bus** | Out | Sends the 19-bit pixel index to the BRAM. |
+| `0x4001_0000` | **Data Bus** | In | Reads the 12-bit RGB value from the BRAM. |
+| `0x4002_0000` | **LED Control** | Out | Updates physical LEDs for status monitoring. |
+| `0x4002_0008` | **Status Bit** | In | Checks if the hardware is ready for processing. |
+| `0x4003_0000` | **Reset Trigger**| In | Waits for an external signal (button) to restart. |
+
+### 🚀 Key Performance Features
+* **Non-Destructive Monitoring:** High-speed MUXing allows the processor to analyze data with negligible impact on the live VGA feed.
+* **Edge Detection Logic:** Uses a hardware-level rising edge detector to ensure that BRAM "Read Enable" pulses precisely once per software request, preventing data synchronization issues.
+* **Flexible Sub-Sampling:** Coordinates can be adjusted in the C code to track specific objects (e.g., a Red Line) within the frame.
