@@ -187,7 +187,9 @@ An Integrated Logic Analyzer (ILA) is used to monitor:
 The top module brings together camera input, memory buffering, real-time display, and processor control into a cohesive system. It demonstrates a complete embedded vision pipeline with both hardware acceleration and software interaction.
 
 ---
-# Camera---------------------------------------------------------------------------------------------------------
+# Camera------------------------------------------------------------------------------------------------------
+(sorry, youre a little bit early, still has to be written. 27.3.26)
+
 ---
 
 ##  Dual-Port BRAM (Frame Buffer)
@@ -422,5 +424,14 @@ Format:
 ---
 ### Summary
 The MicroBlaze subsystem provides a flexible bridge between software and hardware, allowing direct access to frame buffer data through a controlled, memory-mapped interface. Combined with the MUX-based architecture, this enables dynamic switching between real-time display and software-driven analysis.
+
+
+
+# Python-------
+(sorry, youre a little bit early, still has to be written. 27.3.26)
+
+
+# Arduino Uno-------
+(sorry, youre a little bit early, still has to be written. 27.3.26)
 
 
