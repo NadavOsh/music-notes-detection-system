@@ -18,8 +18,49 @@ Before diving deep it's important to mote that there are two way for doing the n
 <img width="794" height="695" alt="image" src="https://github.com/user-attachments/assets/e719f061-eaba-4f0f-a874-ed34f53bea8b" />
 
 ---
+# FPGA
 
-# BRAM
+---
+##  Top-Level System Integration (`top.v`)
+
+The `top` module is the central integration point of the system, connecting all hardware and software components into a complete image acquisition, processing, and display pipeline.
+
+---
+
+###  System Overview
+
+This module integrates the following subsystems:
+
+-  Camera interface (OV7670)
+-  Frame buffer (BRAM)
+-  VGA display controller
+-  MicroBlaze processor (via Vitis)
+-  User input (buttons, switches, 7-segment display)
+-  Debug tools (ILA)
+
+---
+
+###  High-Level Data Flow
+
+```text
+Camera → cam_top → Image Processing → BRAM → VGA → Display
+                                      ↘
+                                       MicroBlaze (optional access)
+
+
+```
+
+* The camera continuously writes pixel data into BRAM
+* VGA reads from BRAM for real-time display
+* MicroBlaze can optionally take control of BRAM access
+
+### Clock Domains
+
+ The design operates across multiple clock domains:
+
+ 
+---
+
 
 ##  Dual-Port BRAM (Frame Buffer)
 
@@ -83,12 +124,12 @@ This allows switching between real-time visualization and software-driven inspec
 * Efficient 2D-to-1D address mapping
 * Supports both streaming (VGA) and random access (MicroBlaze)
 
-## Summary
+### Summary
 
 The BRAM serves as the central data buffer in the system, enabling seamless integration between the camera input, FPGA processing, VGA output, and MicroBlaze-based control.
 
 ---
-# VGA
+
 
 ##  VGA Display Subsystem
 
@@ -160,7 +201,7 @@ This VGA subsystem enables real-time image display directly from FPGA memory, fo
 
 
 
-# MicroBlaze
+---
 
 ##  MicroBlaze Control & Data Extraction
 
