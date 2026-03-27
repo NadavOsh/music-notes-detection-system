@@ -8,7 +8,7 @@ Before diving deep it's important to mote that there are two way for doing the n
 
 
 
-#VGA
+# VGA
 
 ##  VGA Display Subsystem
 
