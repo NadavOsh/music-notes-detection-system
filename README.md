@@ -91,7 +91,7 @@ This VGA subsystem enables real-time image display directly from FPGA memory, fo
 
 
 
-# Microblaze
+# MicroBlaze
 ##  Hardware-Software Co-Design: MicroBlaze & FPGA Integration
 
 This project implements a **Real-Time Image Processing Pipeline** where a Xilinx MicroBlaze soft-core processor interacts with an OV7670 camera feed stored in Block RAM (BRAM). The system allows for high-level C-based analysis of raw pixel data without interrupting the live VGA video output.
