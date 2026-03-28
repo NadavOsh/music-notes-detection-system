@@ -681,10 +681,61 @@ Through the C code we cause this signal to rise but we only want to read from on
 IP CORE from Xililnx designed to receive a clock at a frequency of 100MHz and produce two new clocks at frequencies of: 25MHz for the VGA DOMAIN and 24MHz for the external camera model.
 
 # Python-------
-(sorry, youre a little bit early, still has to be written. 27.3.26)
+(sorry, youre a little bit early, still has to be written. 28.3.26)
 
 
-# Arduino Uno-------
-(sorry, youre a little bit early, still has to be written. 27.3.26)
+# Arduino Uno Audio Output (UART → Buzzer)
 
+## Overview
+
+The Arduino Uno module is responsible for converting the detected musical notes (received from the computer via UART) into audible sound using a passive buzzer.
+
+It acts as the final stage of the system, transforming digital note data into real-world audio output.
+
+## System Role
+### Data Flow
+```text
+Image Processing (Python)
+        ↓
+Detected Notes (e.g., "C4", "E5")
+        ↓  UART
+Arduino Uno
+        ↓
+Passive Buzzer (PWM tone generation)
+```
+
+### Key Responsibilities
+* Receive note commands via UART (Serial communication)
+* Parse incoming note strings (e.g., "C4", "A4")
+* Map each note to its corresponding frequency
+* Generate sound using PWM (tone() function)
+
+## UART Communication
+### Configuration
+```C
+Serial.begin(9600);
+```
+* Baud rate: 9600
+* Data format: ASCII strings
+* Each note is sent as a newline-terminated string
+
+### Example Input
+```text
+C4\n
+E4\n
+G4\n
+```
+
+### Note Parsing
+```C
+data = Serial.readStringUntil('\n');
+data.trim();
+```
+* Reads incoming data until newline (\n)
+* Removes extra whitespace
+* Matches string to known note values
+
+### Frequency Mapping
+
+Each musical note is mapped to its corresponding frequency (Hz):
 
