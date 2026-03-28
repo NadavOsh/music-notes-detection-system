@@ -754,7 +754,7 @@ Example:
 
 ## Sound Generation
 
-``C
+```C
 tone(BUZZER_PIN, frequency, duration);
 ```
 * Generates a square wave on the buzzer pin
