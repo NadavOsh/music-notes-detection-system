@@ -711,14 +711,11 @@ IP CORE from Xililnx designed to receive a clock at a frequency of 100MHz and pr
 
 The code uses tkinter to create a step-by-step "Wizard." Each function (like create_welcome_screen, create_load_fpga_screen, etc.) destroys the previous widgets and draws new ones. This ensures the user follows the hardware steps in the correct order:
 
-### Steps 1–2: 
-Powering on the FPGA and waiting for hardware readiness (LEDs).
+* Powering on the FPGA and waiting for hardware readiness (LEDs).
 
-### Step 4:
-Instruction for the user to set physical Switches (SW5-SW15) on the board to tell the FPGA how many images to capture.
+* Instruction for the user to set physical Switches (SW5-SW15) on the board to tell the FPGA how many images to capture.
 
-### Step 6–7:
-Instructions for using Putty to log serial data into putty.txt.
+* Instructions for using Putty to log serial data into putty.txt.
 
 ---
 ## Image Reconstruction (generate_image_from_data)
