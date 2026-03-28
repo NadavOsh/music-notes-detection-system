@@ -680,9 +680,81 @@ Through the C code we cause this signal to rise but we only want to read from on
 ### Clock gen
 IP CORE from Xililnx designed to receive a clock at a frequency of 100MHz and produce two new clocks at frequencies of: 25MHz for the VGA DOMAIN and 24MHz for the external camera model.
 
-# Python-------
-(sorry, youre a little bit early, still has to be written. 28.3.26)
+# Python Code For GUI + Computer Vision & Music Detection
 
+## The GUI State Machine (Tkinter)
+
+**A Few Examples:**
+
+---
+
+<img width="554" height="331" alt="image" src="https://github.com/user-attachments/assets/bbeb593b-06cf-47e8-ac6f-ea36202fa7fd" />
+
+---
+
+<img width="553" height="295" alt="image" src="https://github.com/user-attachments/assets/3f6129b1-9bbe-42ea-942a-50aff393da12" />
+
+---
+
+<img width="554" height="295" alt="image" src="https://github.com/user-attachments/assets/879cf9b1-7bbe-4cf7-bc9a-d0e1e93eeb34" />
+
+---
+
+<img width="553" height="221" alt="image" src="https://github.com/user-attachments/assets/93677213-2b9b-490f-999f-86a59f0dd508" />
+
+---
+
+<img width="554" height="264" alt="image" src="https://github.com/user-attachments/assets/3cf5a6d7-db67-4e1a-8bb3-fc14e0a73846" />
+
+---
+
+
+The code uses tkinter to create a step-by-step "Wizard." Each function (like create_welcome_screen, create_load_fpga_screen, etc.) destroys the previous widgets and draws new ones. This ensures the user follows the hardware steps in the correct order:
+
+### Steps 1–2: 
+Powering on the FPGA and waiting for hardware readiness (LEDs).
+
+### Step 4:
+Instruction for the user to set physical Switches (SW5-SW15) on the board to tell the FPGA how many images to capture.
+
+### Step 6–7:
+Instructions for using Putty to log serial data into putty.txt.
+
+---
+## Image Reconstruction (generate_image_from_data)
+
+* Input: A text file (putty.txt) containing hex values and addresses.
+
+* Process:
+  * It removes the header/footer lines.
+
+  * It parses the 12-bit hex (e.g., 0xF00).
+
+  * Bit-Splitting: It extracts RGB444: Red (bits 11-8), Green (bits 7-4), Blue (bits 3-0).
+
+  * Upscaling: It multiplies each 4-bit value by 17 to convert it to a standard 8-bit (0-255) color.
+
+* Output: It uses matplotlib to display and save a .jpeg of what the camera saw.
+
+## Computer Vision & Music Detection (detect_music_char)
+
+This part uses OpenCV to "read" the musical note:
+
+Staff Detection: find_and_filter_staff_lines uses a Horizontal Projection Profile. It sums the black pixels across rows to find the 5 horizontal lines of the musical staff.
+
+Note Detection: detect_red_line looks for the specific Red Overlay line you created in your Verilog code.
+
+Logic: The function determine_note compares the Y-position of the Red Line to the Y-positions of the Staff Lines. If the red line is between the 2nd and 3rd staff lines, it identifies the note (e.g., "C5").
+
+## Hardware Feedback Loop (send_note)
+
+The script sends the detected notes names to the Arduino via UART.
+
+* It initializes a connection to COM3 at 9600 Baud.
+
+* When a note is detected (like "E4"), it sends that string over the serial port.
+
+* Finally, the Arduino Uno gets the detected motes from the camera
 
 # Arduino Uno Audio Output (UART → Buzzer)
 
