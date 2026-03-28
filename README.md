@@ -187,9 +187,42 @@ An Integrated Logic Analyzer (ILA) is used to monitor:
 The top module brings together camera input, memory buffering, real-time display, and processor control into a cohesive system. It demonstrates a complete embedded vision pipeline with both hardware acceleration and software interaction.
 
 ---
-# Camera------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------
+
+## Camera OV7670
+
+
+<img width="691" height="681" alt="image" src="https://github.com/user-attachments/assets/682f9013-7d45-4451-b82a-850529c17bc2" />
+
+## 📷 Hardware Interface: OV7670 Camera Integration
+
+The system interfaces with the **OV7670 CMOS image sensor** using a custom-built SCCB (Serial Camera Control Bus) controller. This allows the FPGA to configure the camera's internal registers for color space, resolution, and clock scaling.
+
+### 🔌 Pin Mapping & Signal Description
+
+| Pin Name | Direction | Function | FPGA Mapping |
+| :--- | :--- | :--- | :--- |
+| **SIOC** | Input | SCCB Clock (I2C Compatible) | `o_sioc` (Master Clock) |
+| **SIOD** | Inout | SCCB Data (Bidirectional) | `io_siod` (Open-Drain) |
+| **VSYNC** | Output | Vertical Sync | Frame Start Detection |
+| **HREF** | Output | Horizontal Reference | Row Valid Signal |
+| **PCLK** | Output | Pixel Clock | Data Sampling Clock |
+| **XCLK** | Input | System Clock | 24MHz Master Input |
+| **D[7:0]** | Output | 8-bit Parallel Data | Pixel Byte Stream |
+| **RESET** | Input | Hardware Reset | Active Low |
+| **PWDN** | Input | Power Down | Tied to GND (Always On) |
+
+###  Camera Initialization Architecture
+
+The initialization sequence is handled by a layered hardware stack to ensure modularity and reliability:
+
+
+
+
+
 (sorry, youre a little bit early, still has to be written. 27.3.26)
 
+#-------------------------------------
 ---
 
 ##  Dual-Port BRAM (Frame Buffer)
