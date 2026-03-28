@@ -738,4 +738,58 @@ data.trim();
 ### Frequency Mapping
 
 Each musical note is mapped to its corresponding frequency (Hz):
+```C
+#define C4 262
+#define D4 294
+#define E4 330
+...
+```
+Example:
+| Note   | Frequency (Hz)  |
+|--------|-----------------|
+| C4     | 262             |
+| A4     | 440             |
+| E5     | 659             |   
 
+
+## Sound Generation
+
+``C
+tone(BUZZER_PIN, frequency, duration);
+```
+* Generates a square wave on the buzzer pin
+* Produces audible sound at the given frequency
+**Parameters:**
+* BUZZER_PIN → Output pin (Pin 8)
+* frequency → Note frequency
+* duration → Note length (ms)
+
+## Example Behavior
+```text
+Input:  "C4"
+Output: Plays 262 Hz tone for 500 ms
+```
+
+```text
+Input:  "A4"
+Output: Plays 440 Hz tone for 500 ms
+```
+## Debug Output
+
+```C
+Serial.println("Playing C4");
+```
+* Sends feedback to the serial monitor
+* Useful for debugging and validation
+
+## Design Notes
+* Uses passive buzzer, so PWM signal is required
+* tone() simplifies frequency generation using hardware timers
+* Fixed note duration (500 ms) for consistent playback
+* Simple string-based protocol for easy integration with Python
+
+## Summary
+* Receives note commands via UART
+* Maps note names to frequencies
+* Generates sound using PWM
+* Acts as the final audio output stage of the system
