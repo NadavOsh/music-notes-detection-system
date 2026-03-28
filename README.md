@@ -189,6 +189,7 @@ The top module brings together camera input, memory buffering, real-time display
 ---
 
 
+
 ## Camera OV7670
 
 
@@ -650,7 +651,34 @@ Format:
 ### Summary
 The MicroBlaze subsystem provides a flexible bridge between software and hardware, allowing direct access to frame buffer data through a controlled, memory-mapped interface. Combined with the MUX-based architecture, this enables dynamic switching between real-time display and software-driven analysis.
 
+## Additional Modules
 
+### Debouncer
+A noise filtering module used for the BTND and BTNR buttons.
+The purpose of this module is to make sure that the change in the button is "real" and not temporary or caused by noise on the line.
+This module uses a DELAY of a number of clock cycles (240,000 in our case) where if the state of the button is different from the last state it was in for the number of clock cycles as in DELAY, the value of the button is entered into the output of the model and this is the real value of the button with which the camera module is used.
+The debouncer in this module is set to 2.4ms.
+
+### simple_seven_segment
+This module is designed to display 8 digits on the 2 seven segment screens in the development kit in the following order:
+The 4 right digits show the decimal value of SW[15:5] and this is intended to indicate the number of images that you want to capture.
+The 4 left digits show the value of the current image being analyzed. This value increases with each increase in SW4.
+In this module there is also a debouncer for SW4 that operates as described above, but with a DELAY of 1,000,000 clock cycles.
+That is, 10ms.
+
+### Signal generator
+A module designed to produce a signal that increases in jumps of 10 each time the BTNC button in the development kit is increased.
+When you pass 340, which is the bottom line of the image, you return back to the beginning of the image, which is 140 (the real image boundaries without the blue background).
+In order to recognize the note on a computer, an image must be sent in which there is a red line under the musical note.
+In our project, we instruct the user to place the red line created in the video image under the photographed note.
+In order for the user to have maximum flexibility in the placement of the line, they have the option to change the position of the note within the image they are photographing, and this happens through this model.
+
+### Rising edge detector
+A module whose function is to detect a rise of a signal and through it to execute a read command from the BRAM.
+Through the C code we cause this signal to rise but we only want to read from one address at a time, so it is necessary to detect such a rise and that the signal at the output that reads from the BRAM will be at '1' for only one clock cycle.
+
+### Clock gen
+IP CORE from Xililnx designed to receive a clock at a frequency of 100MHz and produce two new clocks at frequencies of: 25MHz for the VGA DOMAIN and 24MHz for the external camera model.
 
 # Python-------
 (sorry, youre a little bit early, still has to be written. 27.3.26)
