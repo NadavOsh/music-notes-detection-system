@@ -1,18 +1,31 @@
 # music-notes-detection-system
 End-to-end embedded system for detecting musical notes includes camera, FPGA, SoC, image processing and microcontroller
 
-A systen in which the user takes a number of photos (by his decision) with an OV7670 camera connected to an FPGA (Xilinx NEXYS A7 in that case) and displaying the camera's image/video with a VGA. Then sends it to a computer using the FPGA's internal microprocessor (Microblaze) with a UART protocol (PuTTY is being used here). The computer runs a Python code that creates a unique computer vision algorithm (which would be discussed later) and GUI (Tkinter) for the user. in the end of all of it it send the notes to an Arduino Uno microcontroller (UART), and the MCU plays them with a passive buzzer with a PWM method. 
+A system in which the user takes a number of photos (by his decision) with an OV7670 camera connected to an FPGA (Xilinx NEXYS A7 in that case) and displaying the camera's image/video with a VGA. Then sends it to a computer using the FPGA's internal microprocessor (Microblaze) with a UART protocol (PuTTY is being used here). The computer runs a Python code that creates a unique computer vision algorithm (which would be discussed later) and GUI (Tkinter) for the user. in the end of all of it it send the notes to an Arduino Uno microcontroller (UART), and the MCU plays them with a passive buzzer with a PWM method. 
 
-Before diving deep it's important to note that there are two way for doing the note detection algorithm: one (the naive way) is detecting the ellipse with fitEllipse function (as part of a bigger algorithm which would be discussed  later), or the second option, using a red line that is being placed by the user while taking the photo. the fisrt way is more simple while the second is more accurate. Because the image comes from an OV7670 camera (low resulotion camera) we've decided to go with the second option. There is still an alterantive CV code that can be found in this project using the first method (src->python->Notes_Detection.ipynb).
+Before diving deep it's important to note that there are two ways for doing the note detection algorithm: one (the naive way) is detecting the ellipse with fitEllipse function (as part of a bigger algorithm which would be discussed  later), or the second option, using a red line that is being placed by the user while taking the photo. the first way is more simple while the second is more accurate. Because the image comes from an OV7670 camera (low resulotion camera) we've decided to go with the second option. There is still an alterantive CV code that can be found in this project using the first method (src->python->Notes_Detection.ipynb).
 
+# A System Diagram
+## OV7670 Camera → FPGA (+ MPU) → UART → PC (GUI + CV) → Arduino Uno (+ Passive Buzzer) → Sound
+
+<img width="1911" height="682" alt="image" src="https://github.com/user-attachments/assets/fbcaf44d-e7e6-41f9-8b08-b2ed548c2d69" />
+
+---
+
+<img width="1527" height="964" alt="image" src="https://github.com/user-attachments/assets/75102959-3751-4c5f-a7b2-8b315240ca6c" />
+
+
+---
 
 # A View on the System
 <img width="1265" height="1077" alt="image" src="https://github.com/user-attachments/assets/c57bc8fc-3555-4153-bf42-426d6eafd3f4" />
 
+---
 
 # Block Diagram of the System
-<img width="869" height="532" alt="image" src="https://github.com/user-attachments/assets/565cf6fa-fb7a-4b0c-a5d6-421c62b4ce88" />
+<img width="1538" height="758" alt="image" src="https://github.com/user-attachments/assets/bf433c95-9f3a-4061-9672-7fceaea69929" />
 
+---
 
 # FPGA
 
@@ -554,6 +567,7 @@ Behavior:
 This VGA subsystem enables real-time image display directly from FPGA memory, forming a key part of the system pipeline from image capture to visualization.
 
 
+<img width="1308" height="456" alt="image" src="https://github.com/user-attachments/assets/6d9220e9-d994-4eb2-9760-86b8112d393f" />
 
 
 
@@ -888,3 +902,7 @@ Serial.println("Playing C4");
 * Maps note names to frequencies
 * Generates sound using PWM
 * Acts as the final audio output stage of the system
+
+---
+<img width="1825" height="841" alt="image" src="https://github.com/user-attachments/assets/156a47a3-ce2f-4ccf-ad73-04d387fad634" />
+
