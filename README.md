@@ -194,7 +194,6 @@ The top module brings together camera input, memory buffering, real-time display
 
 <img width="691" height="681" alt="image" src="https://github.com/user-attachments/assets/682f9013-7d45-4451-b82a-850529c17bc2" />
 
-## 📷 Hardware Interface: OV7670 Camera Integration
 
 The system interfaces with the **OV7670 CMOS image sensor** using a custom-built SCCB (Serial Camera Control Bus) controller. This allows the FPGA to configure the camera's internal registers for color space, resolution, and clock scaling.
 
@@ -212,10 +211,14 @@ The system interfaces with the **OV7670 CMOS image sensor** using a custom-built
 | **RESET** | Input | Hardware Reset | Active Low |
 | **PWDN** | Input | Power Down | Tied to GND (Always On) |
 
+
 ###  Camera Initialization Architecture
 
 The initialization sequence is handled by a layered hardware stack to ensure modularity and reliability:
 
+#### cam_rom
+* Registers for OV7670 for configuration of RGB 444 
+* LUT where each data contains 16 bits: 1 byte for register address in the camera + 1 byte data to send to it 
 
 
 
