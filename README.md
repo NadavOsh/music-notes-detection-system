@@ -735,13 +735,39 @@ The code uses tkinter to create a step-by-step "Wizard." Each function (like cre
 
 ## Computer Vision & Music Detection (detect_music_char)
 
-This part uses OpenCV to "read" the musical note:
+Logic: The function determine_note compares the Y-position of the Red Line to the Y-positions of the Staff Lines. For example, If the red line is between the 2nd and 3rd staff lines, it identifies the note (e.g., "C5").
 
-Staff Detection: find_and_filter_staff_lines uses a Horizontal Projection Profile. It sums the black pixels across rows to find the 5 horizontal lines of the musical staff.
+After receiving the image from the FPGA containing the character with the red line as a text file and restoring it, we did the character recognition part. To perform this operation, we wrote Python code that mainly uses the cv2 and numpy libraries.
+First, we restored the image from the text file. Then, we transferred the image to binary format and did a Gaussian blur to make it easier to recognize.
+In the next step, we created a function that would identify the five black lines in the image and put the values ​​of their heights in an array of about five elements. 
+```python
+staff_lines = find_and_filter_staff_lines(binary, max_lines=5)
+```
+Where binary is the binary image after the blurring.
 
-Note Detection: detect_red_line looks for the specific Red Overlay line you created in your Verilog code.
+Then, we used the numpy sum function that sums all the values ​​on the axis given to it. We used axis=1, which means the horizontal axis.
+```python
+projection = np.sum(binary_image, axis=1)
+```
 
-Logic: The function determine_note compares the Y-position of the Red Line to the Y-positions of the Staff Lines. If the red line is between the 2nd and 3rd staff lines, it identifies the note (e.g., "C5").
+The next step is to identify the line with the highest value and require that the lines be at least 70% of the intensity of that line, which we keep as potential lines.
+```python
+threshold = 0.7 * np.max(projection)
+potential_lines = np.where(projection > threshold)[0]
+```
+
+The next part of the code is designed to combine lines that are consecutive, one after the other, because if they are consecutive in terms of the image lines, we can conclude that it is one thick line that occupies several lines and should be treated as one line.
+A similar thing is done afterwards when we actually calculate the average distance between lines and remove lines if they are less than 60% of the average distance, this way we avoid false identifications. In addition, this can help avoid identifying the red line, which is anyway less likely to be added to this function since its intensity after conversion to binary is significantly less than the black lines.
+
+Finally, we collect the lines until we reach five values.
+The next function is the red line detection. To this function, we pass the image in RGB format that is created after the image is restored:
+```python
+image = cv2.imread(uploaded_filename)
+```
+
+In the function itself, we first change the image from RGB to HSV, this is because it is easier to identify colors in HSV format that directly represents the color (representing hue, saturation and value. The color will be according to the hue). The color red is found in values ​​between 0-10 and also in 170-180. In addition, we required that the saturation be between 70-255 and the value 50-255 so that we ensure that it is a prominent red color. Then we changed the image again so that the red area became white and everything else was black, so we then identified the height of the line.
+At this point, we have one variable that contains the height of the five black lines and another variable that contains the height of the red line. Now we have one more function that will retrieve the character based on the position of the red line relative to the black lines.
+In this function, we first declare an array that contains all the character names we expect to receive, from highest to lowest. Each time we check whether the red line is below the black line we are checking and thus move forward in the array. If the red line is between two lines, we check its relative position and thus decide whether the line should be between them or whether it is a slight deviation.
 
 ## Hardware Feedback Loop (send_note)
 
