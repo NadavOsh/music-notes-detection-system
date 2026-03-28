@@ -904,6 +904,8 @@ Serial.println("Playing C4");
 * Acts as the final audio output stage of the system
 
 ---
+# Results
+
 <img width="1825" height="841" alt="image" src="https://github.com/user-attachments/assets/156a47a3-ce2f-4ccf-ad73-04d387fad634" />
 
 
