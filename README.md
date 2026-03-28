@@ -308,13 +308,111 @@ o_pix_data = {RRRR, GGGG, BBBB}
 ```
 #### Frame Synchronization
 #### VSYNC Edge Detection
+```verilog
+frame_start = falling edge of vsync
+frame_done  = rising edge of vsync
+```
+* frame_start → beginning of a new frame
+* frame_done → end of frame
 
+This ensures correct alignment of captured image data.
 
+#### State Machine
+Main States
+
+| State    | Description                                        |
+|----------|----------------------------------------------------|
+| WAIT     | Wait for camera initialization + first valid frame |
+| IDLE     | Wait for frame start                               |
+| CAPTURE  |  Normal pixel capture (write to BRAM)              |
+| CAPTURE2 | Alternate mode (read/processing mode)              |
+
+State Flow
+```text
+WAIT → IDLE → CAPTURE → IDLE → ...
+```
+or
+```text
+WAIT → IDLE → CAPTURE2 → IDLE → ...
+```
+Depending on mode (video vs picture).
+
+#### Frame Skipping
+At startup:
+``` verilog
+SM_state <= (frame_start && i_cam_done) ? IDLE : WAIT;
+```
+* The module ignores initial frames
+* Allows camera registers to stabilize after configuration
+
+#### Pixel Capture Logic
+Two-Byte Assembly
+```verilog
+if (!r_half_data)
+    pixel_data <= i_D[3:0];  // First byte (R)
+
+o_pix_data <= {pixel_data, i_D};  // Second byte (G+B)
+```
+**Control Signal:**
+* r_half_data toggles every clock:
+   * 0 → first byte
+   * 1 → second byte (pixel complete)
+
+**Address Generation**
+```verilog
+o_pix_addr <= (r_half_data) ? o_pix_addr + 1 : o_pix_addr;
+```
+* Address increments only when a full pixel is assembled
+* Ensures correct mapping:
+  ```text
+  pixel 0 → address 0
+pixel 1 → address 1
+...
+
+**Write Control (BRAM Interface)**
+```verilog
+o_wr <= (r_half_data) ? 1'b1 : 1'b0;
+```
+* Write enable is asserted only after full pixel is ready
+* Prevents partial/invalid data from being written
+
+**HREF (Line Valid Signal)**
+```verilog
+if (i_href)
+```
+* Ensures data is captured only during active line
+* Ignores blanking intervals
+
+**Capture Modes**
+1. Video Mode (CAPTURE)
+* Continuous streaming
+* Writes pixels to BRAM
+* Used for real-time display
+
+3. Picture Mode (CAPTURE2)
+* Triggered by:
+  * i_cam_capture
+  * i_cam_video
+* Behavior:
+  * Stops writing (o_wr = 0)
+  * Enables read-like behavior (o_rd)
+  * Used for processing or freezing a frame
+ 
+#### Internal Signals
+
+| Signal         | Purpose                              |
+|----------------|--------------------------------------|
+| r_half_data    | Tracks byte phase (1st/2nd byte)     |
+| pixel_data     | Stores R component                   |
+| o_pix_data     |  Final RGB444 pixel                  |
+| o_pix_addr     | BRAM address                         |
+| o_wr           | Write enable                         |
+| start          | Mode-dependent capture enable        |
 
 ### cam_top
 
 
-(sorry, youre a little bit early, still has to be written. 27.3.26)
+Top-Level for the camera.
 
 
 ---
@@ -476,7 +574,7 @@ Communication between the MicroBlaze and FPGA logic is implemented using **memor
 | `0x40000008`   | Pixel address input          |
 | `0x40010000`   | Pixel data output            |
 | `0x40020000`   | Control / status signals     |
-| `0x40020008`   | Ready flag                  |
+| `0x40020008`   | Ready flag                   |
 | `0x40030000`   | Restart trigger              |
 
 The processor writes to these registers to control BRAM access and reads back pixel values.
