@@ -271,7 +271,46 @@ In our project, o_cam_init_done is connected to LED1 in the development kit and 
 
 ### cam_cap
 
-(sorry, youre a little bit early, still has to be written. 27.3.26)
+#### Overview
+
+The cam_capture module is responsible for capturing pixel data from the OV7670 camera and converting it into a format suitable for storage in BRAM and display via VGA.
+
+It operates in the camera pixel clock domain (i_pclk) and handles:
+
+* Frame synchronization (vsync)
+* Line validity (href)
+* Pixel reconstruction (RGB444)
+* Memory addressing
+* Write control to BRAM
+
+
+#### Key Responsibilities
+* Wait for camera initialization (i_cam_done)
+* Synchronize to frame boundaries using vsync
+* Convert incoming 2-byte pixel stream → 12-bit RGB
+* Generate sequential pixel addresses
+* Write valid pixels into BRAM
+* Support two modes:
+  * Continuous video
+  * Single-frame capture
+
+#### Input Pixel Format (OV7670 RGB444)
+
+The camera sends pixel data in two bytes per pixel:
+```text
+Byte 1: XXXX RRRR
+Byte 2: GGGG BBBB
+```
+
+The module reconstructs this into:
+```text
+o_pix_data = {RRRR, GGGG, BBBB}
+```
+#### Frame Synchronization
+#### VSYNC Edge Detection
+
+
+
 ### cam_top
 
 
