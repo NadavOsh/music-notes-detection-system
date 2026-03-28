@@ -187,7 +187,7 @@ An Integrated Logic Analyzer (ILA) is used to monitor:
 The top module brings together camera input, memory buffering, real-time display, and processor control into a cohesive system. It demonstrates a complete embedded vision pipeline with both hardware acceleration and software interaction.
 
 ---
-# ------------------------------------------------------------------------------------------------------
+
 
 ## Camera OV7670
 
@@ -254,9 +254,30 @@ Where:
 * WR_BIT = write enable
 * X = don't care bit (SCCB does not use ACK like I²C)
 
+#### cam_init
+A module that is responsible for sending the desired settings to the camera component.
+
+This part is made up of three sub-parts:
+1. ROM memory whose function is to store the camera's initialization settings.
+2. Config model whose function is to retrieve the values from the ROM and send them to the SCCB model -.
+3. The SCCB model manages the actual sending to the camera model via the SIO_D data line and the SIO_C clock line
+
+In general, this module works so that it waits for the i_cam_init_start signal and then the module waits for the SCCB module to signal when it is ready.
+Only after that the module will start receiving the settings stored in ROM - and sending them to the camera module.
+
+After all the settings have been sent, the o_cam_init_done signal goes to '1', indicating the end of the camera configuration phase.
+In our project, o_cam_init_done is connected to LED1 in the development kit and its lighting indicates that the camera setup phase has ended and the camera is ready for use.
+
+
+### cam_cap
+
+(sorry, youre a little bit early, still has to be written. 27.3.26)
+### cam_top
+
+
 (sorry, youre a little bit early, still has to be written. 27.3.26)
 
-#-------------------------------------
+
 ---
 
 ##  Dual-Port BRAM (Frame Buffer)
