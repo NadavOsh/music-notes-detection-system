@@ -220,8 +220,39 @@ The initialization sequence is handled by a layered hardware stack to ensure mod
 * Registers for OV7670 for configuration of RGB 444 
 * LUT where each data contains 16 bits: 1 byte for register address in the camera + 1 byte data to send to it 
 
+#### cam_config
+control logic- sends data from ROM to a SCCB module.
+
+FSM:
+* IDLE
+* SEND
+* DONE
+* TIMER (Give SCCB time to complete . Create delay between commands)
+
+#### sccb_master
 
 
+The `sccb_master` module utilizes a 12-state FSM to translate parallel data into the serial SCCB protocol. Each state is timed relative to a 400kHz clock, ensuring compatibility with the OV7670's internal timing requirements.
+
+| State | Purpose | Description |
+| :--- | :--- | :--- |
+| **IDLE** | Wait | Default state; holds SDA and SCL High while waiting for `i_start`. |
+| **START_1/2** | Start Condition | Pulls SDA Low while SCL is High to signal a new transaction. |
+| **WAIT** | Byte Prep | Latches the next byte (Device Addr, Reg Addr, or Data) to the shift register. |
+| **DATA_1-4** | Bit-Banging | The core loop: Shifts bits out on SDA and toggles SCL to sample data. |
+| **DATA_DONE** | Byte Complete | Resets bit counters and pulses a `done` tick after 9 bits (8 data + 1 don't care). |
+| **RESTART** | Repeat | Generates a repeated start condition if required by the protocol. |
+| **END_1/2** | Stop Condition | Pulls SDA High while SCL is High to release the bus. |
+
+
+Each write transaction consists of 3 bytes
+* byte1 = {CAM_ADDR, WR_BIT, X}
+* byte2 = {REGISTER_ADDR, X}
+* byte3 = {DATA, X}
+Where:
+* CAM_ADDR = 0x21 (OV7670 address)
+* WR_BIT = write enable
+* X = don't care bit (SCCB does not use ACK like I²C)
 
 (sorry, youre a little bit early, still has to be written. 27.3.26)
 
