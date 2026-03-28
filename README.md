@@ -906,3 +906,10 @@ Serial.println("Playing C4");
 ---
 <img width="1825" height="841" alt="image" src="https://github.com/user-attachments/assets/156a47a3-ce2f-4ccf-ad73-04d387fad634" />
 
+
+
+# Future Improvements
+* Build a driver instead of using PuTTy
+* Translate the Python code to an Arduino code and bypass the PC
+* Add another computer vision algorithm for detecting weight and signs
+
